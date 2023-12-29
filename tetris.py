@@ -94,7 +94,7 @@ def settle_tetromino(tetromino, grid):
     for x, y in TETROMINOES[tetromino['shape']][tetromino['rotation']]:
         grid_x = tetromino['x'] + x
         grid_y = tetromino['y'] + y
-        if grid_y >= 0:
+        if 0 <= grid_x < GRID_WIDTH and 0 <= grid_y < GRID_HEIGHT:
             grid[grid_y][grid_x] = 1
 
 def draw_grid(screen, grid):
@@ -137,6 +137,14 @@ while not game_over:
                     current_tetromino['rotation'] = original_rotation
             elif event.key == pygame.K_DOWN:
                 current_tetromino['y'] += 1
+                if check_collision(current_tetromino, grid):
+                    current_tetromino['y'] -= 1
+                    settle_tetromino(current_tetromino, grid)
+                    grid, lines_cleared = clear_lines(grid)  # Clear completed lines
+                    current_tetromino = new_tetromino()  # Spawn a new Tetromino
+                    if check_collision(current_tetromino, grid):
+                        game_over = True
+
     time_passed = clock.tick(FPS)
     move_down_time += time_passed
 
