@@ -12,7 +12,11 @@ SCREEN_HEIGHT = GRID_HEIGHT * BLOCK_SIZE
 grid = [[0 for _ in range(GRID_WIDTH)] for _ in range(GRID_HEIGHT)]
 move_down_time = 0
 move_down_speed = 300
+base_speed = 400
 score = 0
+level = 1
+lines_cleared_total = 0
+
 
 # Define the shapes of the tetrominoes
 TETROMINOES = {
@@ -120,10 +124,20 @@ def clear_lines(grid):
     for _ in range(lines_cleared):
         new_grid.insert(0, [0 for _ in range(GRID_WIDTH)])
 
+    global lines_cleared_total, level
+    lines_cleared_total += lines_cleared
+
+    # Increase level every 10 lines cleared, for example
+    if lines_cleared_total >= level * 5:
+        level += 1
+
     return new_grid, lines_cleared
 
 # Game loop
 while not game_over:
+    # Adjust falling speed based on level
+    move_down_speed = base_speed - (level - 1) * 50  # Decrease speed by 50 ms per level
+    move_down_speed = max(50, move_down_speed)  # Set a lower limit to prevent it from becoming too fast
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             game_over = True
@@ -177,7 +191,9 @@ while not game_over:
     font = pygame.font.SysFont(None, 36)
     score_text = font.render(f'Score: {score}', True, (255, 255, 255))
     screen.blit(score_text, (5, 5))  # Position the score in the top-left corner
-
+    # Display Level
+    level_text = font.render(f'Level: {level}', True, (255, 255, 255))
+    screen.blit(level_text, (5, 30))  # Adjust position as needed
     pygame.display.flip()
 
     clock.tick(FPS)
