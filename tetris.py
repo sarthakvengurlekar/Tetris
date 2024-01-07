@@ -2,15 +2,17 @@ import pygame
 import random
 
 # Define constants for the game
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+
 BLOCK_SIZE = 30
 FPS = 20
-GRID_WIDTH = SCREEN_WIDTH // BLOCK_SIZE
-GRID_HEIGHT = SCREEN_HEIGHT // BLOCK_SIZE
+GRID_WIDTH = 10
+GRID_HEIGHT = 20
+SCREEN_WIDTH = GRID_WIDTH * BLOCK_SIZE
+SCREEN_HEIGHT = GRID_HEIGHT * BLOCK_SIZE
 grid = [[0 for _ in range(GRID_WIDTH)] for _ in range(GRID_HEIGHT)]
 move_down_time = 0
-move_down_speed = 600
+move_down_speed = 300
+score = 0
 
 # Define the shapes of the tetrominoes
 TETROMINOES = {
@@ -109,6 +111,10 @@ def clear_lines(grid):
     
     # Calculate the number of lines cleared
     lines_cleared = GRID_HEIGHT - len(new_grid)
+
+    #Update score
+    global score
+    score += lines_cleared * 100 #100 points per line
     
     # Add empty rows at the top for each line cleared
     for _ in range(lines_cleared):
@@ -167,6 +173,10 @@ while not game_over:
 
     draw_grid(screen, grid)
     draw_tetromino(screen, current_tetromino)
+
+    font = pygame.font.SysFont(None, 36)
+    score_text = font.render(f'Score: {score}', True, (255, 255, 255))
+    screen.blit(score_text, (5, 5))  # Position the score in the top-left corner
 
     pygame.display.flip()
 
